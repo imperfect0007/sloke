@@ -1,10 +1,7 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { createNestApp } from './bootstrap';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  const app = await createNestApp();
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
   console.log(`GraphQL http://localhost:${port}/graphql`);

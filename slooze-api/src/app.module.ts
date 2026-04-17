@@ -16,7 +16,11 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // On Vercel, env comes from the dashboard / system env, not a committed .env file.
+      ignoreEnvFile: process.env.VERCEL === '1',
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,

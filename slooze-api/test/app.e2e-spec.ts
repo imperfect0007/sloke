@@ -3,7 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
-describe('GraphQL (e2e)', () => {
+const hasPostgresUrl = () => {
+  const u = process.env.DATABASE_URL ?? '';
+  return u.startsWith('postgres://') || u.startsWith('postgresql://');
+};
+
+(hasPostgresUrl() ? describe : describe.skip)('GraphQL (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {

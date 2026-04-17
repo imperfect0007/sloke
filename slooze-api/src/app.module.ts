@@ -13,6 +13,7 @@ import { OrdersModule } from './orders/orders.module';
 import { PaymentMethodsModule } from './payment-methods/payment-methods.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RestaurantsModule } from './restaurants/restaurants.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -34,7 +35,10 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     CartsModule,
     OrdersModule,
     PaymentMethodsModule,
+    HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
+
+

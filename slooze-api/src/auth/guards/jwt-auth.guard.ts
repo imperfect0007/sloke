@@ -26,6 +26,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   getRequest(context: ExecutionContext) {
+    if (context.getType<'http' | 'graphql'>() === 'http') {
+      return context.switchToHttp().getRequest();
+    }
     const ctx = GqlExecutionContext.create(context);
     return ctx.getContext().req;
   }
@@ -37,3 +40,4 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return user;
   }
 }
+

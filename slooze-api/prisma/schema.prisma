@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+enum Country {
+  INDIA
+  AMERICA
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING_PAYMENT
+  PAID
+  CANCELLED
+}
+
+model User {
+  id              String          @id @default(cuid())
+  email           String          @unique
+  password        String
+  role            Role
+  country         Country
+  carts           Cart[]
+  orders          Order[]
+  paymentMethods  PaymentMethod[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Restaurant {
+  id        String     @id @default(cuid())
+  name      String
+  country   Country
+  menuItems MenuItem[]
+}
+
+model MenuItem {
+  id           String      @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  name         String
+  priceCents   Int
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([userId])
+}
+
+model CartItem {
+  id         String   @id @default(cuid())
+  cartId     String
+  cart       Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  quantity   Int      @default(1)
+
+  @@unique([cartId, menuItemId])
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  country    Country
+  status     OrderStatus
+  totalCents Int         @default(0)
+  items      OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  priceCents Int
+}
+
+model PaymentMethod {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String
+  last4     String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
